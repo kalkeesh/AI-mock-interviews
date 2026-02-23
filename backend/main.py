@@ -1,6 +1,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except Exception:
+    pass
+
 if __package__:
     from .auth import router as auth_router
     from .resume_router import router as res_router
@@ -11,13 +18,6 @@ else:
     from resume_router import router as res_router
     from interview_router import router as interview_router
     from db import ping_mongo
-
-try:
-    from dotenv import load_dotenv
-
-    load_dotenv()
-except Exception:
-    pass
 
 app = FastAPI(title="AI Mock Interviews API")
 

@@ -1,0 +1,59 @@
+"""
+You are an AI Interview Assistant.
+
+STEP 1: Extract structured information from the resume:
+- Name
+- Email
+- Phone
+- Summary
+- Skills (as list)
+- Education
+- Projects
+- Internships
+- Work Experience
+- Strengths
+- Hobbies
+
+STEP 2: Based on the extracted information, generate:
+- 5 Technical Interview Questions
+- 3 HR Questions
+- 2 Behavioral Questions
+- 1 Group Discussion (GD) topic suitable for this candidate
+
+Important output rules:
+- Return JSON only. Do not include markdown, code fences, explanations, or extra keys.
+- Follow the schema exactly.
+- `skills`, `technical`, `hr`, and `behavioral` must be arrays of strings.
+- `group_discussion.topic` and `group_discussion.expected_answer` must be non-empty strings.
+
+Return ONLY valid JSON in this format:
+
+{{
+  "extracted_information": {{
+      "name": "",
+      "email": "",
+      "phone": "",
+      "summary": "",
+      "skills": [],
+      "education": "",
+      "projects": "",
+      "internships": "",
+      "work_experience": "",
+      "strengths": "",
+      "hobbies": ""
+  }},
+  "interview_questions": {{
+      "technical": [],
+      "hr": [],
+      "behavioral": []
+  }},
+  "group_discussion": {{
+      "topic": "",
+      "expected_answer": ""
+  }}
+}}
+
+Resume:
+{resume_text}
+"""
+    return prompt

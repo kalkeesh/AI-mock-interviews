@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 from typing import List, Literal, Optional
 
@@ -36,6 +37,7 @@ class FaceMetrics(BaseModel):
 
 
 class InterviewSessionPayload(BaseModel):
+    session_mode: Optional[Literal["interview", "gd"]] = "interview"
     candidate_email: Optional[str] = None
     candidate_name: Optional[str] = None
     answers: List[QuestionAnswer]
@@ -45,9 +47,14 @@ class InterviewSessionPayload(BaseModel):
 def _get_sentence_model():
     global _st_model
     if _st_model is None:
+        token = os.getenv("HF_TOKEN") or os.getenv("HUGGINGFACE_HUB_TOKEN") or os.getenv("HF_API_KEY")
+        if token:
+            os.environ.setdefault("HF_TOKEN", token)
+            os.environ.setdefault("HUGGINGFACE_HUB_TOKEN", token)
+
         from sentence_transformers import SentenceTransformer
 
-        _st_model = SentenceTransformer("all-mpnet-base-v2")
+        _st_model = SentenceTransformer("sentence-transformers/all-mpnet-base-v2", token=token)
     return _st_model
 
 
@@ -127,6 +134,7 @@ def complete_interview_session(payload: InterviewSessionPayload):
         }
 
         document = {
+            "session_mode": payload.session_mode or "interview",
             "candidate_email": payload.candidate_email,
             "candidate_name": payload.candidate_name,
             "answers": [a.model_dump() for a in payload.answers],
@@ -134,13 +142,13 @@ def complete_interview_session(payload: InterviewSessionPayload):
             "summary": summary,
             "created_at": datetime.utcnow(),
         }
-
         collection = get_interview_sessions_collection()
         insert_result = collection.insert_one(document)
 
         return {
             "message": "Interview session stored",
             "session_id": str(insert_result.inserted_id),
+            "session_mode": payload.session_mode or "interview",
             "summary": summary,
         }
     except Exception as exc:
